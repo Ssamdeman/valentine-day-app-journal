@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will You Be My Valentine?</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Lato:wght@300;400;700&family=Playfair+Display:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: #0d0a0e;
+            --deep-rose: #c8445a;
+            --warm-gold: #e8a87c;
+            --blush-white: #f5ede8;
+            --rose-glow: rgba(200, 68, 90, 0.4);
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background: var(--bg-dark);
+            min-height: 100vh;
+            overflow: hidden;
+            color: var(--blush-white);
+        }
+
+        .screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Progress Dots */
+        .progress-dots {
+            position: fixed;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(245, 237, 232, 0.2);
+            transition: all 0.4s ease;
+        }
+
+        .dot.active {
+            background: var(--deep-rose);
+            box-shadow: 0 0 15px var(--rose-glow);
+        }
+
+        /* Screen 1 Styles */
+        #screen-1 {
+            background: radial-gradient(ellipse at bottom, #1a1218 0%, var(--bg-dark) 60%);
+        }
+
+        .hearts-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .heart {
+            position: absolute;
+            bottom: -50px;
+            opacity: 0;
+        }
+
+        .heart svg {
+            fill: var(--deep-rose);
+            filter: drop-shadow(0 0 8px var(--rose-glow));
+        }
+
+        .heart.gold svg {
+            fill: var(--warm-gold);
+            filter: drop-shadow(0 0 10px rgba(232, 168, 124, 0.5));
+        }
+
+        .heart.blush svg {
+            fill: var(--blush-white);
+            opacity: 0.6;
+        }
+
+        .content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .hey-you {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.5rem;
+            color: var(--warm-gold);
+            margin-bottom: 20px;
+            opacity: 0;
+        }
+
+        .main-question {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--blush-white);
+            margin-bottom: 60px;
+            opacity: 0;
+            line-height: 1.3;
+        }
+
+        .buttons-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            position: relative;
+        }
+
+        .btn-yes {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            padding: 18px 60px;
+            background: linear-gradient(135deg, var(--deep-rose) 0%, #a83548 100%);
+            color: var(--blush-white);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 0 30px var(--rose-glow);
+            animation: pulse 2s ease-in-out infinite;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: scale(0.8);
+        }
+
+        .btn-yes:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 50px var(--rose-glow);
+        }
+
+        .btn-yes.super-glow {
+            animation: superPulse 1.5s ease-in-out infinite;
+            box-shadow: 0 0 60px var(--rose-glow), 0 0 100px rgba(200, 68, 90, 0.3);
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 30px var(--rose-glow);
+            }
+
+            50% {
+                transform: scale(1.02);
+                box-shadow: 0 0 50px var(--rose-glow);
+            }
+        }
+
+        @keyframes superPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 40px var(--rose-glow), 0 0 80px rgba(200, 68, 90, 0.4);
+            }
+
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 70px var(--rose-glow), 0 0 120px rgba(200, 68, 90, 0.5);
+            }
+        }
+
+        .btn-no {
+            font-family: 'Lato', sans-serif;
+            font-size: 0.9rem;
+            padding: 10px 25px;
+            background: transparent;
+            color: rgba(245, 237, 232, 0.5);
+            border: 1px solid rgba(245, 237, 232, 0.3);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0;
+            position: relative;
+        }
+
+        .btn-no:hover {
+            border-color: var(--blush-white);
+            color: var(--blush-white);
+        }
+
+        /* Particle burst */
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            pointer-events: none;
+        }
+
+        .particle svg {
+            fill: var(--deep-rose);
+        }
+
+        .particle.gold svg {
+            fill: var(--warm-gold);
+        }
+
+        /* Utility */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Screen 2 & 3 Shared Styles - Card Selection */
+        #screen-2,
+        #screen-3 {
+            background: var(--bg-dark);
+            transform: translateY(100%);
+            opacity: 0;
+        }
+
+        #screen-2.visible,
+        #screen-3.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .screen-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header-subtitle {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.5rem;
+            color: var(--warm-gold);
+            opacity: 0;
+        }
+
+        .header-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--blush-white);
+            margin-top: 5px;
+            opacity: 0;
+        }
+
+        .cards-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            padding: 0 20px;
+            perspective: 1000px;
+            margin-top: 30px;
+        }
+
+        .selection-card {
+            width: 160px;
+            height: 260px;
+            position: relative;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(60px);
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .selection-card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .selection-card.selected {
+            box-shadow: 0 0 40px var(--rose-glow), 0 0 80px rgba(200, 68, 90, 0.3);
+        }
+
+        .selection-card.dimmed {
+            opacity: 0.3;
+            filter: grayscale(0.8);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 16px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a1218 0%, #2a1f26 100%);
+            border: 1px solid rgba(245, 237, 232, 0.1);
+        }
+
+        .card-front {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .card-info {
+            padding: 12px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 0.95rem;
+            color: var(--blush-white);
+            margin-bottom: 4px;
+        }
+
+        .card-tag {
+            font-family: 'Lato', sans-serif;
+            font-size: 0.7rem;
+            color: var(--warm-gold);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+            background: linear-gradient(135deg, var(--deep-rose) 0%, #8b2d3d 100%);
+            border: 2px solid var(--warm-gold);
+        }
+
+        .card-back p {
+            font-family: 'Lato', sans-serif;
+            font-size: 0.85rem;
+            color: var(--blush-white);
+            line-height: 1.5;
+        }
+
+        .card-back .card-title {
+            color: var(--blush-white);
+            margin-bottom: 10px;
+        }
+
+        /* Checkmark for selected card */
+        .selected-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 28px;
+            height: 28px;
+            background: var(--warm-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .selection-card.selected .selected-indicator {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .selected-indicator svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--bg-dark);
+        }
+
+        /* Screen 4 Styles - Food Selection */
+        #screen-4 {
+            background: var(--bg-dark);
+            transform: translateY(100%);
+            opacity: 0;
+            padding-bottom: 140px;
+        }
+
+        #screen-4.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .food-cards-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            padding: 0 20px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .food-card {
+            width: 140px;
+            height: 200px;
+            position: relative;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(60px);
+            border-radius: 16px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a1218 0%, #2a1f26 100%);
+            border: 2px solid rgba(245, 237, 232, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .food-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .food-card.selected {
+            border-color: var(--deep-rose);
+            box-shadow: 0 0 30px var(--rose-glow);
+        }
+
+        .food-card .card-image {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+        }
+
+        .food-card .card-info {
+            padding: 10px;
+            text-align: center;
+        }
+
+        .food-card .card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 0.85rem;
+            color: var(--blush-white);
+        }
+
+        /* Bottom Plate Bar */
+        .plate-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to top, rgba(13, 10, 14, 0.98), rgba(13, 10, 14, 0.9));
+            border-top: 1px solid rgba(200, 68, 90, 0.3);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 50;
+            transform: translateY(100%);
+            transition: transform 0.4s ease;
+        }
+
+        .plate-bar.visible {
+            transform: translateY(0);
+        }
+
+        .plate-thumbnails {
+            display: flex;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .plate-item {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid var(--warm-gold);
+            opacity: 0;
+            transform: scale(0);
+            animation: popIn 0.3s ease forwards;
+        }
+
+        @keyframes popIn {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .plate-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .plate-label {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1rem;
+            color: var(--warm-gold);
+            margin-right: 15px;
+        }
+
+        .btn-order {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, var(--deep-rose) 0%, #a83548 100%);
+            color: var(--blush-white);
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0.5;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-order.enabled {
+            opacity: 1;
+            pointer-events: auto;
+            box-shadow: 0 0 20px var(--rose-glow);
+        }
+
+        .btn-order.enabled:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px var(--rose-glow);
+        }
+
+        .btn-order svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        /* Screen 5 Styles - The Reveal */
+        #screen-5 {
+            background: radial-gradient(circle at center, #2a1f26 0%, var(--bg-dark) 70%);
+            transform: translateY(100%);
+            opacity: 0;
+            padding: 20px;
+        }
+
+        #screen-5.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .summary-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(245, 237, 232, 0.1);
+            border-radius: 20px;
+            padding: 25px;
+            width: 100%;
+            max-width: 340px;
+            margin: 20px 0;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .summary-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(245, 237, 232, 0.1);
+        }
+
+        .summary-section:last-child {
+            border-bottom: none;
+        }
+
+        .summary-icon {
+            font-size: 1.5rem;
+            width: 40px;
+            height: 40px;
+            background: rgba(232, 168, 124, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .summary-text h3 {
+            font-family: 'Lato', sans-serif;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--warm-gold);
+            margin-bottom: 2px;
+        }
+
+        .summary-text p {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            color: var(--blush-white);
+        }
+
+        .note-container {
+            text-align: center;
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.3rem;
+            color: var(--warm-gold);
+            margin: 10px 0 25px;
+            opacity: 0;
+            line-height: 1.4;
+            max-width: 300px;
+        }
+
+        .countdown-container {
+            text-align: center;
+            margin-bottom: 30px;
+            opacity: 0;
+        }
+
+        .countdown-container p {
+            font-family: 'Lato', sans-serif;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(245, 237, 232, 0.5);
+            margin-bottom: 5px;
+        }
+
+        .timer {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--blush-white);
+            text-shadow: 0 0 20px var(--rose-glow);
+        }
+
+        .screenshot-btn {
+            background: transparent;
+            border: 1px solid var(--warm-gold);
+            color: var(--warm-gold);
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-family: 'Lato', sans-serif;
+            font-size: 0.9rem;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s ease;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .screenshot-btn:hover {
+            background: var(--warm-gold);
+            color: var(--bg-dark);
+            box-shadow: 0 0 20px rgba(232, 168, 124, 0.4);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Progress Dots -->
+    <div class="progress-dots">
+        <div class="dot active" data-screen="1"></div>
+        <div class="dot" data-screen="2"></div>
+        <div class="dot" data-screen="3"></div>
+        <div class="dot" data-screen="4"></div>
+        <div class="dot" data-screen="5"></div>
+    </div>
+
+    <!-- Screen 1: The Ask -->
+    <div class="screen" id="screen-1">
+        <div class="hearts-container" id="hearts-tree"></div>
+
+        <div class="content">
+            <p class="hey-you" id="hey-text">hey you...</p>
+            <h1 class="main-question" id="question-text">Will you be my Valentine?</h1>
+
+            <div class="buttons-container">
+                <button class="btn-yes" id="btn-yes">YES</button>
+                <button class="btn-no" id="btn-no">maybe no</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screen 2: Pick a Movie -->
+    <div class="screen" id="screen-2">
+        <div class="screen-header">
+            <p class="header-subtitle" id="screen2-subtitle">first things first...</p>
+            <h2 class="header-title" id="screen2-title">Pick our movie</h2>
+        </div>
+
+        <div class="cards-container" id="movie-cards">
+            <!-- Movie Card 1 -->
+            <div class="selection-card movie-card" data-movie="dead-poets">
+                <div class="selected-indicator">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                    </svg>
+                </div>
+                <div class="card-face card-front">
+                    <img class="card-image" src="https://picsum.photos/seed/poets/300/450" alt="Movie poster">
+                    <div class="card-info">
+                        <h3 class="card-title">Dead Poets Society</h3>
+                        <span class="card-tag">Drama (1989)</span>
+                    </div>
+                </div>
+                <div class="card-face card-back">
+                    <h3 class="card-title">Dead Poets Society</h3>
+                    <p>"Carpe Diem." A moving classic about seizing the day. Prepare for some emotions.</p>
+                </div>
+            </div>
+
+            <!-- Movie Card 2 -->
+            <div class="selection-card movie-card" data-movie="didi">
+                <div class="selected-indicator">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                    </svg>
+                </div>
+                <div class="card-face card-front">
+                    <img class="card-image" src="https://picsum.photos/seed/didi/300/450" alt="Movie poster">
+                    <div class="card-info">
+                        <h3 class="card-title">Dìdi (2024)</h3>
+                        <span class="card-tag">Coming of Age</span>
+                    </div>
+                </div>
+                <div class="card-face card-back">
+                    <h3 class="card-title">Dìdi</h3>
+                    <p>A funny, honest look at growing up. Relatable cringe and heartfelt moments.</p>
+                </div>
+            </div>
+
+            <!-- Movie Card 3 -->
+            <div class="selection-card movie-card" data-movie="budapest">
+                <div class="selected-indicator">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                    </svg>
+                </div>
+                <div class="card-face card-front">
+                    <img class="card-image" src="https://picsum.photos/seed/budapest/300/450" alt="Movie poster">
+                    <div class="card-info">
+                        <h3 class="card-title">The Grand Budapest Hotel</h3>
+                        <span class="card-tag">Wes Anderson (2014)</span>
+                    </div>
+                </div>
+                <div class="card-face card-back">
+                    <h3 class="card-title">Grand Budapest</h3>
+                    <p>Quirky, colorful, and visually perfect. A delightful adventure.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screen 3: Pick a Wine -->
+    <div class="screen" id="screen-3">
+        <div class="screen-header">
+            <p class="header-subtitle" id="screen3-subtitle">now the important part...</p>
+            <h2 class="header-title" id="screen3-title">What are we drinking?</h2>
+        </div>
+
+        <div class="cards-container" id="wine-cards">
+            <!-- Wine Card 1 -->
+            <div class="selection-card wine-card" data-wine="wine">
+                <div class="selected-indicator">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                    </svg>
+                </div>
+                <div class="card-face card-front">
+                    <img class="card-image" src="https://picsum.photos/seed/wineglass/300/450" alt="Wine">
+                    <div class="card-info">
+                        <h3 class="card-title">Wine</h3>
+                        <span class="card-tag">Classic Choice</span>
+                    </div>
+                </div>
+                <div class="card-face card-back">
+                    <h3 class="card-title">Wine</h3>
+                    <p>Red, white, or rosé. A timeless pairing for a perfect night.</p>
+                </div>
+            </div>
+
+            <!-- Wine Card 2 -->
+            <div class="selection-card wine-card" data-wine="vodka">
+                <div class="selected-indicator">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                    </svg>
+                </div>
+                <div class="card-face card-front">
+                    <img class="card-image" src="https://picsum.photos/seed/vodka/300/450" alt="Vodka">
+                    <div class="card-info">
+                        <h3 class="card-title">Vodka</h3>
+                        <span class="card-tag">Clean & Crisp</span>
+                    </div>
+                </div>
+                <div class="card-face card-back">
+                    <h3 class="card-title">Vodka</h3>
+                    <p>Martinis? Mules? Or just straight up. Let's get the vibes going.</p>
+                </div>
+            </div>
+
+            <!-- Wine Card 3 -->
+            <div class="selection-card wine-card" data-wine="tequila">
+                <div class="selected-indicator">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                    </svg>
+                </div>
+                <div class="card-face card-front">
+                    <img class="card-image" src="https://picsum.photos/seed/tequila/300/450" alt="Tequila">
+                    <div class="card-info">
+                        <h3 class="card-title">Tequila</h3>
+                        <span class="card-tag">Wild Card</span>
+                    </div>
+                </div>
+                <div class="card-face card-back">
+                    <h3 class="card-title">Tequila</h3>
+                    <p>Margaritas or shots—let's see where the night takes us! 🍋</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screen 4: Pick the Food -->
+    <div class="screen" id="screen-4">
+        <div class="screen-header">
+            <p class="header-subtitle" id="screen4-subtitle">almost there...</p>
+            <h2 class="header-title" id="screen4-title">What are we eating?</h2>
+        </div>
+
+        <div class="food-cards-container" id="food-cards">
+            <!-- Food Card 1 -->
+            <div class="food-card" data-food="pasta" data-img="https://picsum.photos/seed/pasta/300/300">
+                <img class="card-image" src="https://picsum.photos/seed/pasta/300/300" alt="Pasta">
+                <div class="card-info">
+                    <h3 class="card-title">Pasta Dish</h3>
+                </div>
+            </div>
+
+            <!-- Food Card 2 -->
+            <div class="food-card" data-food="pizza" data-img="https://picsum.photos/seed/pizza/300/300">
+                <img class="card-image" src="https://picsum.photos/seed/pizza/300/300" alt="Pizza">
+                <div class="card-info">
+                    <h3 class="card-title">Pizza</h3>
+                </div>
+            </div>
+
+            <!-- Food Card 3 -->
+            <div class="food-card" data-food="burger" data-img="https://picsum.photos/seed/burger/300/300">
+                <img class="card-image" src="https://picsum.photos/seed/burger/300/300" alt="Burger">
+                <div class="card-info">
+                    <h3 class="card-title">Burger</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Plate Bar -->
+    </div>
+    <!-- Screen 5: The Reveal -->
+    <div class="screen" id="screen-5">
+        <div class="screen-header">
+            <p class="header-subtitle" id="screen5-subtitle">it's official...</p>
+            <h2 class="header-title" id="screen5-title">Our Date Night ✨</h2>
+        </div>
+
+        <div class="summary-card" id="summary-card">
+            <div class="summary-section" id="summary-movie">
+                <div class="summary-icon">🎬</div>
+                <div class="summary-text">
+                    <h3>Movie</h3>
+                    <p id="final-movie">The Notebook</p>
+                </div>
+            </div>
+            <div class="summary-section" id="summary-wine">
+                <div class="summary-icon">🍷</div>
+                <div class="summary-text">
+                    <h3>Wine</h3>
+                    <p id="final-wine">Cabernet Sauvignon</p>
+                </div>
+            </div>
+            <div class="summary-section" id="summary-food">
+                <div class="summary-icon">🍽️</div>
+                <div class="summary-text">
+                    <h3>Menu</h3>
+                    <p id="final-food">Pizza, Sushi</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="note-container" id="note-container">
+            <p>"I've been looking forward to this.<br>You, me, and a perfect evening."</p>
+        </div>
+
+        <div class="countdown-container" id="countdown-container">
+            <p>Countdown starts now...</p>
+            <div class="timer" id="timer">00:00:00</div>
+        </div>
+
+        <button class="screenshot-btn super-glow" id="screenshot-btn">
+            <span>Send this to me! 📸</span>
+        </button>
+    </div>
+
+    <script>
+        // Heart SVG
+        const heartSVG = `<svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
+
+        // Screen 1: The Ask
+        const heartsContainer = document.getElementById('hearts-tree');
+        const heyText = document.getElementById('hey-text');
+        const questionText = document.getElementById('question-text');
+        const btnYes = document.getElementById('btn-yes');
+        const btnNo = document.getElementById('btn-no');
+        let noClickCount = 0;
+
+        // Create hearts tree
+        function createHeartsTree() {
+            const heartCount = 60;
+            const centerX = window.innerWidth / 2;
+            const baseY = window.innerHeight;
+
+            for (let i = 0; i < heartCount; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+
+                const layer = Math.floor(i / 10);
+                const maxSpread = 150 + (5 - layer) * 40;
+                const xOffset = (Math.random() - 0.5) * maxSpread * 2;
+                const targetY = baseY - 100 - layer * 80 - Math.random() * 40;
+                const targetX = centerX + xOffset * (0.3 + layer * 0.15);
+                const size = 15 + Math.random() * 25;
+                const rotation = (Math.random() - 0.5) * 60;
+
+                const rand = Math.random();
+                if (rand > 0.7) heart.classList.add('gold');
+                else if (rand > 0.4) heart.classList.add('blush');
+
+                heart.innerHTML = heartSVG;
+                heart.querySelector('svg').style.width = size + 'px';
+                heart.querySelector('svg').style.height = size + 'px';
+                heart.style.left = targetX + 'px';
+                heart.style.bottom = '-50px';
+                heart.style.transform = `rotate(${rotation}deg)`;
+                heartsContainer.appendChild(heart);
+
+                gsap.to(heart, {
+                    bottom: targetY,
+                    opacity: 0.8 + Math.random() * 0.2,
+                    duration: 1.5 + Math.random() * 1,
+                    delay: i * 0.03,
+                    ease: "power2.out"
+                });
+            }
+        }
+
+        function animateText() {
+            gsap.to(heyText, {
+                opacity: 1,
+                y: -10,
+                duration: 1.2,
+                delay: 0.5,
+                ease: "power2.out"
+            });
+
+            gsap.to(questionText, {
+                opacity: 1,
+                y: -10,
+                duration: 1.2,
+                delay: 1.5,
+                ease: "power2.out"
+            });
+
+            gsap.to(btnYes, {
+                opacity: 1,
+                scale: 1,
+                duration: 0.8,
+                delay: 2.5,
+                ease: "back.out(1.7)"
+            });
+
+            gsap.to(btnNo, {
+                opacity: 1,
+                duration: 0.6,
+                delay: 3,
+                ease: "power2.out"
+            });
+        }
+
+        btnNo.addEventListener('mouseover', function () {
+            if (noClickCount < 3) dodgeButton();
+        });
+
+        btnNo.addEventListener('click', function () {
+            if (noClickCount < 3) dodgeButton();
+        });
+
+        function dodgeButton() {
+            noClickCount++;
+            if (noClickCount >= 3) {
+                gsap.to(btnNo, {
+                    x: 200,
+                    y: 100,
+                    opacity: 0,
+                    duration: 0.5,
+                    ease: "power2.in",
+                    onComplete: () => {
+                        btnNo.classList.add('hidden');
+                        btnYes.classList.add('super-glow');
+                    }
+                });
+            } else {
+                gsap.to(btnNo, {
+                    x: (Math.random() - 0.5) * 300,
+                    y: Math.random() * 150 - 50,
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            }
+        }
+
+        btnYes.addEventListener('click', function () {
+            createParticleBurst();
+            setTimeout(() => {
+                gsap.to('#screen-1', {
+                    y: '-100%',
+                    opacity: 0,
+                    duration: 0.8,
+                    ease: "power2.in"
+                });
+                showScreen2();
+            }, 800);
+        });
+
+        function createParticleBurst() {
+            const burstCount = 30;
+            const btnRect = btnYes.getBoundingClientRect();
+            const centerX = btnRect.left + btnRect.width / 2;
+            const centerY = btnRect.top + btnRect.height / 2;
+
+            for (let i = 0; i < burstCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                if (Math.random() > 0.5) particle.classList.add('gold');
+                particle.innerHTML = heartSVG;
+                const size = 12 + Math.random() * 16;
+                particle.querySelector('svg').style.width = size + 'px';
+                particle.querySelector('svg').style.height = size + 'px';
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+                particle.style.position = 'fixed';
+                document.body.appendChild(particle);
+
+                const angle = (Math.PI * 2 * i) / burstCount + (Math.random() - 0.5) * 0.5;
+                const distance = 100 + Math.random() * 150;
+
+                gsap.to(particle, {
+                    x: Math.cos(angle) * distance,
+                    y: Math.sin(angle) * distance - 50,
+                    opacity: 0,
+                    scale: 0.5,
+                    rotation: Math.random() * 360,
+                    duration: 1 + Math.random() * 0.5,
+                    ease: "power2.out",
+                    onComplete: () => particle.remove()
+                });
+            }
+
+            gsap.to(btnYes, {
+                scale: 1.2,
+                duration: 0.2,
+                yoyo: true,
+                repeat: 1,
+                ease: "power2.out"
+            });
+        }
+
+        // Screen 2: Pick a Movie
+        function showScreen2() {
+            const screen2 = document.getElementById('screen-2');
+            const subtitle = document.getElementById('screen2-subtitle');
+            const title = document.getElementById('screen2-title');
+            const cards = document.querySelectorAll('.movie-card');
+            const dots = document.querySelectorAll('.dot');
+
+            dots[0].classList.remove('active');
+            dots[1].classList.add('active');
+
+            screen2.classList.add('visible');
+            gsap.to(screen2, {
+                opacity: 1,
+                duration: 0.5,
+                ease: "power2.out"
+            });
+
+            gsap.to(subtitle, {
+                opacity: 1,
+                y: -10,
+                duration: 0.8,
+                delay: 0.3,
+                ease: "power2.out"
+            });
+
+            gsap.to(title, {
+                opacity: 1,
+                y: -10,
+                duration: 0.8,
+                delay: 0.5,
+                ease: "power2.out"
+            });
+
+            gsap.to(cards, {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                stagger: 0.15,
+                delay: 0.7,
+                ease: "back.out(1.5)"
+            });
+        }
+
+        // Movie card interactions
+        const movieCards = document.querySelectorAll('.movie-card');
+        let movieSelected = false;
+
+        movieCards.forEach(card => {
+            card.addEventListener('click', function () {
+                if (movieSelected) return;
+                movieSelected = true;
+
+                this.classList.add('flipped', 'selected');
+
+                movieCards.forEach(otherCard => {
+                    if (otherCard !== this) {
+                        otherCard.classList.add('dimmed');
+                    }
+                });
+
+                setTimeout(() => {
+                    gsap.to('#screen-2', {
+                        y: '-100%',
+                        opacity: 0,
+                        duration: 0.8,
+                        ease: "power2.in"
+                    });
+                    showScreen3();
+                }, 1200);
+            });
+        });
+
+        // Screen 3: Pick a Wine
+        function showScreen3() {
+            const screen3 = document.getElementById('screen-3');
+            const subtitle = document.getElementById('screen3-subtitle');
+            const title = document.getElementById('screen3-title');
+            const cards = document.querySelectorAll('.wine-card');
+            const dots = document.querySelectorAll('.dot');
+
+            dots[1].classList.remove('active');
+            dots[2].classList.add('active');
+
+            screen3.classList.add('visible');
+            gsap.to(screen3, {
+                opacity: 1,
+                duration: 0.5,
+                ease: "power2.out"
+            });
+
+            gsap.to(subtitle, {
+                opacity: 1,
+                y: -10,
+                duration: 0.8,
+                delay: 0.3,
+                ease: "power2.out"
+            });
+
+            gsap.to(title, {
+                opacity: 1,
+                y: -10,
+                duration: 0.8,
+                delay: 0.5,
+                ease: "power2.out"
+            });
+
+            gsap.to(cards, {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                stagger: 0.15,
+                delay: 0.7,
+                ease: "back.out(1.5)"
+            });
+        }
+
+        // Wine card interactions
+        const wineCards = document.querySelectorAll('.wine-card');
+        let wineSelected = false;
+
+        wineCards.forEach(card => {
+            card.addEventListener('click', function () {
+                if (wineSelected) return;
+                wineSelected = true;
+
+                this.classList.add('flipped', 'selected');
+
+                wineCards.forEach(otherCard => {
+                    if (otherCard !== this) {
+                        otherCard.classList.add('dimmed');
+                    }
+                });
+
+                setTimeout(() => {
+                    gsap.to('#screen-3', {
+                        y: '-100%',
+                        opacity: 0,
+                        duration: 0.8,
+                        ease: "power2.in"
+                    });
+                    showScreen4();
+                }, 1200);
+            });
+        });
+
+        // Screen 4: Pick the Food
+        function showScreen4() {
+            const screen4 = document.getElementById('screen-4');
+            const subtitle = document.getElementById('screen4-subtitle');
+            const title = document.getElementById('screen4-title');
+            const cards = document.querySelectorAll('.food-card');
+            const dots = document.querySelectorAll('.dot');
+
+            dots[2].classList.remove('active');
+            dots[3].classList.add('active');
+
+            screen4.classList.add('visible');
+            gsap.to(screen4, {
+                opacity: 1,
+                duration: 0.5,
+                ease: "power2.out"
+            });
+
+            gsap.to(subtitle, {
+                opacity: 1,
+                y: -10,
+                duration: 0.8,
+                delay: 0.3,
+                ease: "power2.out"
+            });
+
+            gsap.to(title, {
+                opacity: 1,
+                y: -10,
+                duration: 0.8,
+                delay: 0.5,
+                ease: "power2.out"
+            });
+
+            gsap.to(cards, {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                stagger: 0.15,
+                delay: 0.7,
+                ease: "back.out(1.5)"
+            });
+        }
+
+        // Food card interaction (Single Select & Auto-Advance)
+        const foodCards = document.querySelectorAll('.food-card');
+        let foodSelected = false;
+
+        foodCards.forEach(card => {
+            card.addEventListener('click', function () {
+                if (foodSelected) return;
+                foodSelected = true;
+
+                this.classList.add('selected');
+
+                setTimeout(() => {
+                    gsap.to('#screen-4', {
+                        y: '-100%',
+                        opacity: 0,
+                        duration: 0.8,
+                        ease: "power2.in"
+                    });
+                    showScreen5();
+                }, 1200);
+            });
+        });
+
+        // Screen 5: The Reveal
+        function showScreen5() {
+            const screen5 = document.getElementById('screen-5');
+            const subtitle = document.getElementById('screen5-subtitle');
+            const title = document.getElementById('screen5-title');
+            const summaryCard = document.getElementById('summary-card');
+            const note = document.getElementById('note-container');
+            const countdown = document.getElementById('countdown-container');
+            const btn = document.getElementById('screenshot-btn');
+            const dots = document.querySelectorAll('.dot');
+            const plateBar = document.getElementById('plate-bar');
+
+            // Hide previous elements
+            // Hide previous elements
+            // No plate bar to hide anymore
+
+
+            dots[3].classList.remove('active');
+            dots[4].classList.add('active');
+
+            // Populate Data
+            const selectedMovieCard = document.querySelector('.movie-card.selected');
+            const selectedWineCard = document.querySelector('.wine-card.selected');
+            // Get text from the first .card-title found within the selected card (which is in .card-front)
+            const finalMovie = selectedMovieCard ? selectedMovieCard.querySelector('.card-title').innerText : 'Not Selected';
+            const finalWine = selectedWineCard ? selectedWineCard.querySelector('.card-title').innerText : 'Not Selected';
+
+            const selectedFoodCard = document.querySelector('.food-card.selected');
+            const finalFood = selectedFoodCard ? selectedFoodCard.querySelector('.card-title').innerText : 'Not Selected';
+
+            document.getElementById('final-movie').innerText = finalMovie;
+            document.getElementById('final-wine').innerText = finalWine;
+            document.getElementById('final-food').innerText = finalFood;
+
+            // Show Screen
+            screen5.classList.add('visible');
+            gsap.to(screen5, {
+                opacity: 1,
+                duration: 0.5,
+                ease: "power2.out"
+            });
+
+            // Staggered Animation
+            const elements = [subtitle, title, summaryCard, note, countdown, btn];
+            gsap.to(elements, {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                stagger: 0.2,
+                delay: 0.5,
+                ease: "power2.out"
+            });
+
+            startCountdown();
+        }
+
+        function startCountdown() {
+            // Set date to upcoming Feb 14th 7PM
+            const now = new Date();
+            // Target: Feb 14, 2026 19:00:00 (Matches current year in context)
+            const targetDate = new Date("February 14, 2026 19:00:00").getTime();
+
+            const timerElement = document.getElementById('timer');
+
+            function updateTimer() {
+                const currentTime = new Date().getTime();
+                const distance = targetDate - currentTime;
+
+                if (distance < 0) {
+                    timerElement.innerText = "IT'S TIME! ❤️";
+                    return;
+                }
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                const h = hours.toString().padStart(2, '0');
+                const m = minutes.toString().padStart(2, '0');
+                const s = seconds.toString().padStart(2, '0');
+
+                if (days > 0) {
+                    timerElement.innerText = `${days}d ${h}:${m}:${s}`;
+                } else {
+                    timerElement.innerText = `${h}:${m}:${s}`;
+                }
+            }
+
+            updateTimer(); // Run once immediately
+            const interval = setInterval(updateTimer, 1000);
+        }
+
+        // Initialize
+        createHeartsTree();
+        animateText();
+    </script>
+</body>
+
+</html>
